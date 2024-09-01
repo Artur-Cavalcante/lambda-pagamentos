@@ -12,7 +12,7 @@ def lambda_handler(event: SQSEvent, context) -> dict:
     try:
         for record in event.records:
             logger.info(f"Event: {record.body}")
-            pagamento_service.processar_pagamento(record.body)
+            pagamento_service.processar_pagamento(json.loads(record.body))
 
         return {
             "status_code": 200,
