@@ -26,8 +26,16 @@ class PagamentoService():
         
         if sucesso_pagamento:
             pedido["total_pedido"] = total_pedido
-            payload_pedido = json.dumps(pedido)
-            self.lambda_client.invoke(FunctionName="notifica-pagamentos", InvocationType="Event", Payload=payload_pedido)
-            self.sqs_client.send_message(self.url_notificacao_pagamento, payload_pedido)
+            self.confirmar_pagamento(pedido)
+            self.sqs_client.send_message(QueueUrl=self.url_notificacao_pagamento, MessageBody=json.dumps(pedido))
         
         return sucesso_pagamento
+    
+    def confirmar_pagamento(self, pedido: dict):
+        event = {
+            "httpMethod": "PUT",
+            "path": "/confirmar_pagamento",
+            "body": json.dumps(pedido)
+        }
+        
+        self.lambda_client.invoke(FunctionName="api-pedidos", InvocationType="Event", Payload=json.dumps(event))
