@@ -37,5 +37,5 @@ class PagamentoService():
             "path": "/confirmar_pagamento",
             "body": json.dumps(pedido)
         }
-        
+        print(event)
         self.lambda_client.invoke(FunctionName="api-pedidos", InvocationType="Event", Payload=json.dumps(event))
